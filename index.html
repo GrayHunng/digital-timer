@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>極致清晰倒數計時器</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="display-wrapper">
+            <div id="display" class="digital-clock">00:00</div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="changeTime(15)" class="btn-adjust">+15s</button>
+            <button onclick="changeTime(-15)" class="btn-adjust">-15s</button>
+            <button onclick="resetTimer()" class="btn-reset">重置時間</button>
+        </div>
+    </div>
+
+    <audio id="beep-short" src="https://actions.google.com/google-actions/sounds/release/standard/alerts/beep_short.ogg" preload="auto"></audio>
+    <audio id="beep-long" src="https://actions.google.com/google-actions/sounds/release/standard/alarms/digital_watch_alarm_long.ogg" preload="auto"></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
