@@ -15,18 +15,21 @@ function updateDisplay() {
 }
 
 // 點擊任何按鈕時解鎖音效權限
+// 替換 script.js 裡的 unlockAudio 函數
 function unlockAudio() {
     if (isAudioUnlocked) return;
     
-    // 嘗試播放並立刻重置，獲取瀏覽器信任
-    const p1 = beepShort.play();
-    if (p1 !== undefined) {
-        p1.then(() => {
-            beepShort.pause();
-            beepShort.currentTime = 0;
-            isAudioUnlocked = true;
-        }).catch(e => console.log("音效授權中..."));
-    }
+    // 同時解鎖兩個音效
+    const unlock = (audio) => {
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+        }).catch(e => console.log("音效鎖定中"));
+    };
+
+    unlock(beepShort);
+    unlock(beepLong);
+    isAudioUnlocked = true;
 }
 
 // 按下 開始/重新開始 按鈕時觸發
