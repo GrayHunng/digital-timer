@@ -1,4 +1,5 @@
-let timeLeft = 0; // 剩餘時間 (秒)
+let lastSetTime = 0; // 記住使用者最近一次設定的時間
+let timeLeft = 0;
 let timerInterval = null;
 
 const display = document.getElementById('display');
@@ -9,41 +10,39 @@ const beepLong = document.getElementById('beep-long');
 function updateDisplay() {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
-    
-    // padStart(2, '0') 確保顯示為 00:00 格式
     const formattedTime = 
         `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    
     display.textContent = formattedTime;
 }
 
-// 開始計時核心邏輯
+// 開始計時
 function startTimer() {
-    // 如果已經在計時，不需要重複啟動
     if (timerInterval) return;
     
+    // 如果是 0，不開始
+    if (timeLeft === 0) return;
+
+    // 行動裝置優化：點擊後先強制載入音效，解決無聲問題
+    preloadAudio();
+
     timerInterval = setInterval(() => {
         if (timeLeft > 0) {
             timeLeft--;
             updateDisplay();
 
-            // === 音效處理邏輯 ===
-
-            // 1. 剩下 3, 2, 1 秒時發出短提示音 (在數字切換後立刻播放)
+            // 剩下 3, 2, 1 秒時發出短提示音
             if (timeLeft <= 3 && timeLeft > 0) {
                 playSound(beepShort);
             }
 
-            // 2. 時間到 (0秒)
+            // 時間到
             if (timeLeft === 0) {
                 updateDisplay(); // 確保顯示 00:00
                 playSound(beepLong);
                 stopTimer();
             }
-        } else {
-            stopTimer();
         }
-    }, 1000); // 每秒執行一次
+    }, 1000);
 }
 
 // 停止計時
@@ -54,33 +53,39 @@ function stopTimer() {
 
 // 調整時間 (+15s, -15s)
 function changeTime(seconds) {
-    // 調整時間，並使用 Math.max 確保時間不會小於 0
     timeLeft = Math.max(0, timeLeft + seconds);
-    updateDisplay();
     
-    if (timeLeft > 0) {
-        startTimer(); // 如果有時間，自動開始倒數
-    } else {
-        stopTimer(); // 如果變成 0，停止計時
-    }
-}
-
-// 重置時間
-function resetTimer() {
-    stopTimer();
-    timeLeft = 0;
+    // 關鍵更改：將調整後的時間設定為「最後一次使用者設定的時間」
+    lastSetTime = timeLeft;
+    
     updateDisplay();
+    if (timeLeft > 0) startTimer();
 }
 
-// 處理音效播放 (解決行動裝置可能不讓連續播放的問題)
+// 關鍵更改：新的 [重新開始] 邏輯
+function restartTimer() {
+    stopTimer(); // 停止目前的計時
+    
+    // 將時間設回上次設定的時間 (例如 30 秒)
+    timeLeft = lastSetTime; 
+    
+    updateDisplay();
+    if (timeLeft > 0) startTimer(); // 自動開始倒數
+}
+
+// 音效播放
 function playSound(audioElement) {
-    // 重設播放進度到開頭，防止快速連續觸發時無聲
     audioElement.currentTime = 0;
-    // 播放，並捕捉可能發生的錯誤 (例如瀏覽器攔截自動播放)
     audioElement.play().catch(error => {
-        console.log("音效播放被攔截，通常需要使用者先點擊頁面:", error);
+        console.log("音效被攔截:", error);
     });
 }
 
-// 初始化顯示
+// 預載入音效
+function preloadAudio() {
+    beepShort.load();
+    beepLong.load();
+}
+
+// 初始化
 updateDisplay();
