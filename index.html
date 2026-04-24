@@ -14,7 +14,7 @@
         </div>
         
         <div class="controls">
-            <button onclick="restartTimer()" class="btn-restart">開始/重新開始</button>
+            <button onclick="handleStartRestart()" class="btn-restart">開始 / 重新開始</button>
             
             <div class="bottom-btns">
                 <button onclick="changeTime(15)" class="btn-adjust">+15s</button>
@@ -23,8 +23,8 @@
         </div>
     </div>
 
-<audio id="beep-short" src="short.mp3" preload="auto"></audio>
-<audio id="beep-long" src="long.mp3" preload="auto"></audio>
+    <audio id="beep-short" src="beep.mp3" preload="auto"></audio>
+    <audio id="beep-long" src="timesup.mp3" preload="auto"></audio>
 
     <script src="script.js"></script>
 </body>
