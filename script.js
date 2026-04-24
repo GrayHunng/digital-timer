@@ -1,7 +1,7 @@
 let lastSetTime = 0; 
 let timeLeft = 0;
 let timerInterval = null;
-let isAudioUnlocked = false; // 用於追蹤音效是否已解鎖
+let isAudioUnlocked = false; 
 
 const display = document.getElementById('display');
 const beepShort = document.getElementById('beep-short');
@@ -14,29 +14,31 @@ function updateDisplay() {
         `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-// 核心功能：解鎖音效 (在使用者點擊任何按鈕時觸發)
+// 解鎖音效 (關鍵：在使用者點擊按鈕時執行)
 function unlockAudio() {
     if (isAudioUnlocked) return;
-
-    // 播放一段靜音或極短的聲音來獲取權限
+    
+    // 透過播放一段靜音或重設音軌來獲取瀏覽器播放權限
     beepShort.play().then(() => {
         beepShort.pause();
         beepShort.currentTime = 0;
-        isAudioUnlocked = true;
-        console.log("Audio Unlocked!");
-    }).catch(e => console.log("Audio unlock failed:", e));
+        beepLong.play().then(() => {
+            beepLong.pause();
+            beepLong.currentTime = 0;
+            isAudioUnlocked = true;
+        });
+    }).catch(e => console.log("等待互動以解鎖音效"));
 }
 
 function startTimer() {
-    if (timerInterval) return;
-    if (timeLeft === 0) return;
+    if (timerInterval || timeLeft === 0) return;
 
     timerInterval = setInterval(() => {
         if (timeLeft > 0) {
             timeLeft--;
             updateDisplay();
 
-            // 剩下 3, 2, 1 秒時
+            // 剩下 3, 2, 1 秒
             if (timeLeft <= 3 && timeLeft > 0) {
                 playSound(beepShort);
             }
@@ -56,7 +58,7 @@ function stopTimer() {
 }
 
 function changeTime(seconds) {
-    unlockAudio(); // 使用者點擊時解鎖音效
+    unlockAudio(); // 每次點擊都嘗試解鎖，直到成功
     timeLeft = Math.max(0, timeLeft + seconds);
     lastSetTime = timeLeft;
     updateDisplay();
@@ -64,7 +66,7 @@ function changeTime(seconds) {
 }
 
 function restartTimer() {
-    unlockAudio(); // 使用者點擊時解鎖音效
+    unlockAudio();
     stopTimer();
     timeLeft = lastSetTime; 
     updateDisplay();
@@ -72,17 +74,8 @@ function restartTimer() {
 }
 
 function playSound(audioElement) {
-    // 強制重置播放進度
-    audioElement.pause();
-    audioElement.currentTime = 0;
-    
-    // 使用 Promise 確保播放
-    let playPromise = audioElement.play();
-    if (playPromise !== undefined) {
-        playPromise.catch(error => {
-            console.log("播放失敗，嘗試再次解鎖:", error);
-        });
-    }
+    audioElement.currentTime = 0; // 回到開頭
+    audioElement.play().catch(e => console.log("播放被攔截:", e));
 }
 
 updateDisplay();
