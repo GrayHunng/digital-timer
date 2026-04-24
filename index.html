@@ -1,3 +1,12 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>清晰數位計時器</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
     <div class="container">
         <div class="display-wrapper">
@@ -5,7 +14,7 @@
         </div>
         
         <div class="controls">
-            <button onclick="handleStartRestart()" class="btn-restart">開始 / 重新開始</button>
+            <button onclick="restartTimer()" class="btn-restart">重新開始</button>
             
             <div class="bottom-btns">
                 <button onclick="changeTime(15)" class="btn-adjust">+15s</button>
@@ -14,6 +23,9 @@
         </div>
     </div>
 
-    <audio id="beep-short" src="beep.mp3" preload="auto"></audio>
-    <audio id="beep-long" src="timesup.mp3" preload="auto"></audio>
+    <audio id="beep-short" src="https://sounds.prowlapp.com/sounds/2.mp3" preload="auto"></audio>
+    <audio id="beep-long" src="https://sounds.prowlapp.com/sounds/alarm_beeps.mp3" preload="auto"></audio>
+
+    <script src="script.js"></script>
 </body>
+</html>
