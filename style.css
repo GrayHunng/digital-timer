@@ -11,7 +11,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    /* 極致對比：純黑背景 */
+    /* 純黑背景，對比最強 */
     background-color: #000000;
     font-family: 'Orbitron', sans-serif; /* 數位字體 */
     overflow: hidden; /* 防止手機端意外捲動 */
@@ -20,100 +20,96 @@ body {
 .container {
     text-align: center;
     width: 100%;
-    max-width: 600px; /* 限制桌機端最大寬度 */
+    max-width: 600px;
     padding: 20px;
 }
 
-/* 數字顯示區域 */
+/* 數字顯示區域：強制完全置中 */
 .display-wrapper {
-    background: rgba(255, 255, 255, 0.05); /* 微妙的底色框 */
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 20px;
-    padding: 20px;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
     border: 2px solid #333;
+    display: flex;
+    justify-content: center; /* 水平置中 */
+    align-items: center; /* 垂直置中 */
+    height: clamp(100px, 20vh, 180px); /* 給一個具體高度 */
 }
 
 .digital-clock {
-    /* 極致對比：亮黃色文字 */
-    color: #FFEA00;
-    /* 根據螢幕寬度自動調整大小，保證不溢出且最大化 */
-    font-size: clamp(4rem, 25vw, 10rem); 
+    color: #FFEA00; /* 亮黃色 */
+    font-size: clamp(4rem, 25vw, 9rem); /* 自適應大小 */
     font-weight: 700;
     line-height: 1;
-    /* 增加發光效果，提升醒目程度 */
-    text-shadow: 0 0 15px rgba(255, 234, 0, 0.7);
+    text-shadow: 0 0 15px rgba(255, 234, 0, 0.7); /* 發光 */
     letter-spacing: 2px;
+    
+    /* 強制數字完全垂直置中，不偏歪 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: translateY(-3px); /* 微調字體本身可能垂直偏下的問題 */
 }
 
-/* 按鈕區域 */
+/* 按鈕區域佈局 */
 .controls {
+    display: flex;
+    flex-direction: column; /* 按鈕上下排列 */
+    gap: 15px;
+}
+
+/* 下方加減按鈕並排佈局 */
+.bottom-btns {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* 兩列佈局 */
-    gap: 20px;
-    padding: 0 10px;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
 }
 
 /* 通用按鈕樣式 */
 button {
-    font-family: system-ui, -apple-system, sans-serif; /* 按鈕使用無襯線字體，更清晰 */
-    font-size: 1.5rem;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 1.4rem;
     font-weight: bold;
-    padding: 20px;
+    padding: 18px;
     border: none;
-    border-radius: 15px;
+    border-radius: 12px;
     cursor: pointer;
     transition: background 0.1s, transform 0.1s;
-    width: 100%;
-    box-shadow: 0 5px 0 rgba(0,0,0,0.2); /* 實體感陰影 */
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
 }
 
-/* 點擊時的按壓效果 */
 button:active {
     transform: translateY(3px);
-    box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.2);
 }
 
-/* 加減時間按鈕：深灰底白字，突顯中間的數字 */
+/* 重新開始按鈕：大紅色，置中 */
+.btn-restart {
+    background-color: #D32F2F;
+    color: white;
+    width: 100%;
+}
+
+.btn-restart:active {
+    background-color: #B71C1C;
+}
+
+/* 加減時間按鈕：深灰底白字 */
 .btn-adjust {
     background-color: #333333;
     color: #ffffff;
     border: 2px solid #555555;
+    padding: 15px; /* 稍微變小一點 */
 }
 
 .btn-adjust:active {
     background-color: #555555;
 }
 
-/* 重置按鈕：佔滿整行，亮紅色，警示作用 */
-.btn-reset {
-    grid-column: 1 / -1; /* 跨越兩列 */
-    background-color: #D32F2F; /* 飽和度高的紅色 */
-    color: white;
-    font-size: 1.3rem;
-    margin-top: 10px;
-}
-
-.btn-reset:active {
-    background-color: #B71C1C;
-}
-
-/* 行動裝置直向特別優化 (手機) */
+/* 手機版優化 */
 @media (max-width: 480px) {
-    .container {
-        padding: 10px;
-    }
-    
-    .display-wrapper {
-        margin-bottom: 30px;
-        padding: 15px 5px;
-    }
-
     button {
-        font-size: 1.3rem;
-        padding: 18px;
-    }
-    
-    .btn-reset {
         font-size: 1.2rem;
+        padding: 15px;
     }
 }
