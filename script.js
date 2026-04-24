@@ -1,5 +1,5 @@
-let lastSetTime = 0; // 紀錄使用者設定的總秒數
-let timeLeft = 0;    // 當前倒數剩餘秒數
+let lastSetTime = 0; 
+let timeLeft = 0;
 let timerInterval = null;
 let isAudioUnlocked = false; 
 
@@ -14,54 +14,53 @@ function updateDisplay() {
         `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-// 解鎖音效
+// 點擊任何按鈕時解鎖音效權限
 function unlockAudio() {
     if (isAudioUnlocked) return;
-    beepShort.play().then(() => {
-        beepShort.pause();
-        beepShort.currentTime = 0;
-        isAudioUnlocked = true;
-    }).catch(e => console.log("Audio unlock interaction needed"));
+    
+    // 嘗試播放並立刻重置，獲取瀏覽器信任
+    const p1 = beepShort.play();
+    if (p1 !== undefined) {
+        p1.then(() => {
+            beepShort.pause();
+            beepShort.currentTime = 0;
+            isAudioUnlocked = true;
+        }).catch(e => console.log("音效授權中..."));
+    }
 }
 
-// 核心：調整時間按鈕 (現在不會自動開始倒數)
-function changeTime(seconds) {
-    stopTimer(); // 調整時間時，先停止目前的倒數
-    timeLeft = Math.max(0, timeLeft + seconds);
-    lastSetTime = timeLeft; // 更新設定值
-    updateDisplay();
-}
-
-// 核心：開始 / 重新開始按鈕
-function restartTimer() {
-    unlockAudio(); // 使用者點擊時解鎖音效權限
-    stopTimer();   // 清除舊的計時器
+// 按下 開始/重新開始 按鈕時觸發
+function handleStartRestart() {
+    unlockAudio(); 
+    stopTimer(); // 先停止現有的計時器
     
-    timeLeft = lastSetTime; // 回到最初設定的秒數
-    updateDisplay();
-    
-    if (timeLeft > 0) {
-        startTimer(); // 正式啟動
+    if (lastSetTime > 0) {
+        timeLeft = lastSetTime; // 回到最初設定的時間
+        updateDisplay();
+        startTimer(); // 啟動倒數
     }
 }
 
 function startTimer() {
-    // 建立新的計時器
+    if (timerInterval) return; // 防止重複啟動
+    
     timerInterval = setInterval(() => {
         if (timeLeft > 0) {
             timeLeft--;
             updateDisplay();
 
-            // 剩下 3, 2, 1 秒短提示音
+            // 倒數 3, 2, 1 秒
             if (timeLeft <= 3 && timeLeft > 0) {
                 playSound(beepShort);
             }
 
-            // 時間到長提示音
+            // 時間到
             if (timeLeft === 0) {
                 playSound(beepLong);
                 stopTimer();
             }
+        } else {
+            stopTimer();
         }
     }, 1000);
 }
@@ -73,9 +72,19 @@ function stopTimer() {
     }
 }
 
+// 按下 +15s 或 -15s 時觸發
+function changeTime(seconds) {
+    unlockAudio();
+    stopTimer(); // 調整時間時要先停止計時
+    
+    timeLeft = Math.max(0, timeLeft + seconds);
+    lastSetTime = timeLeft; // 更新基準時間
+    updateDisplay();
+}
+
 function playSound(audioElement) {
     audioElement.currentTime = 0;
-    audioElement.play().catch(e => console.log("Playback blocked:", e));
+    audioElement.play().catch(e => console.log("播放被攔截"));
 }
 
 updateDisplay();
